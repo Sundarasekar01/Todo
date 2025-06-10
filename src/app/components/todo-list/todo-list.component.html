@@ -1,0 +1,138 @@
+<div class="todo-container">
+
+  <h1>Todo List</h1>
+
+
+  <!-- Add Task Button -->
+  <div class="add-todo">
+    <button mat-raised-button color="primary" (click)="openModal()">
+      <mat-icon>add</mat-icon> Add Task
+    </button>
+  </div>
+
+  <!-- Filters & Search -->
+  <div class="filters">
+    <input
+      type="text"
+      placeholder="Search tasks..."
+      [(ngModel)]="searchText"
+      class="search-box"
+    />
+
+    <select [(ngModel)]="filterCategory">
+      <option value="">All Categories</option>
+      <option value="Work">Work</option>
+      <option value="Personal">Personal</option>
+      <option value="Other">Other</option>
+    </select>
+
+    <select [(ngModel)]="filterPriority">
+      <option value="">All Priorities</option>
+      <option value="Low">Low</option>
+      <option value="Medium">Medium</option>
+      <option value="High">High</option>
+    </select>
+
+    <select [(ngModel)]="filterStatus">
+      <option value="">All Statuses</option>
+      <option value="completed">Completed</option>
+      <option value="incomplete">Incomplete</option>
+    </select>
+  </div>
+
+  <!-- Loading/Error -->
+  <div *ngIf="loading$ | async" class="loading">Loading...</div>
+  <div *ngIf="error$ | async as error" class="error">{{ error }}</div>
+
+  <!-- Modal Form -->
+  <div class="modal" [class.show]="isModalOpen">
+    <div class="modal-content">
+      <h2>{{ isEditMode ? 'Edit Task' : 'Add Task' }}</h2>
+      <form (ngSubmit)="submitTask()" #taskForm="ngForm">
+        <label>Task Title</label>
+        <input
+          type="text"
+          [(ngModel)]="newTask.task"
+          name="text"
+          required
+        />
+
+        <label>Description</label>
+        <textarea
+          [(ngModel)]="newTask.description"
+          name="description"
+        ></textarea>
+
+        <label>Category</label>
+        <select [(ngModel)]="newTask.category" name="category" required>
+          <option value="" disabled>Select Category</option>
+          <option value="Work">Work</option>
+          <option value="Personal">Personal</option>
+          <option value="Other">Other</option>
+        </select>
+
+        <label>Priority</label>
+        <select [(ngModel)]="newTask.priority" name="priority" required>
+          <option value="" disabled>Select Priority</option>
+          <option value="Low">Low</option>
+          <option value="Medium">Medium</option>
+          <option value="High">High</option>
+        </select>
+
+        <label>
+          <input
+            type="checkbox"
+            [(ngModel)]="newTask.completed"
+            name="completed"
+          />
+          Mark as completed
+        </label>
+
+        <div class="modal-actions">
+          <button mat-raised-button color="primary" type="submit">
+            {{ isEditMode ? 'Update' : 'Add' }}
+          </button>
+          <button mat-button type="button" (click)="closeModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Todo Cards Grid -->
+  <div class="todo-list" *ngIf="(todos$ | async) as todos">
+    <div class="todo-grid">
+      <div
+        class="todo-card"
+        *ngFor="let todo of todos | todoFilter: searchText : filterCategory : filterPriority : filterStatus"
+        [ngClass]="{ completed: todo.completed }"
+      >
+        <div class="todo-header">
+          
+         <div class="todo-header">
+  <div class="actions">
+    <button (click)="editTask(todo)" title="Edit">✏️</button>
+    <button (click)="deleteTodo(todo.id)" title="Delete">🗑️</button>
+  </div>
+  
+</div>
+
+
+          <h3 style="color: black;">{{ todo.task }}</h3>
+
+          <p class="description" *ngIf="todo.description">
+          {{ todo.description }}
+        </p>
+        
+        </div>
+
+        
+
+        <div class="todo-details">
+          <span>🏷️ Category : {{ todo.category }}</span>
+          <span>⚡ Priority : {{ todo.priority }}</span>
+          <span>🎫 Status   :{{ todo.completed ? ' Completed ✅' : ' Incomplete ❌' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
